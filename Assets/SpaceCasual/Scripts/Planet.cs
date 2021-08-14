@@ -20,7 +20,7 @@ public class Planet : MonoBehaviour
 
     public Vector3 GetPosition()
     {
-        return Transform.position;
+        return transform.position;
     }
     public float GetRadius()
     {
