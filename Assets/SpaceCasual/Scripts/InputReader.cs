@@ -37,4 +37,12 @@ public class InputReader : MonoBehaviour
     {
         _Movement = context.ReadValue<Vector2>();
     }
+    public void OnMovement(Vector2 value)
+    {
+        _Movement = value;
+    }
+    public void OnBoost()
+    {
+        Boost = true;
+    }
 }

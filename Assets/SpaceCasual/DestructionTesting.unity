@@ -138,7 +138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &130401694
 Transform:
   m_ObjectHideFlags: 0
@@ -588,7 +588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: 78a210b1e53ad1b4db54b9ae25af05af, type: 3}
-  m_NotificationBehavior: 2
+  m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
@@ -616,10 +616,6 @@ MonoBehaviour:
         m_CallState: 1
     m_ActionId: 983c1e39-fc07-447a-8bbe-9cf75165cdd4
     m_ActionName: Player/Movement[/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: fb715bc9-29d7-45d9-a207-fb6319922efc
-    m_ActionName: Player/Speed Control[/Mouse/delta]
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 86419797-3f22-42a2-a1ef-9749ccd0585b
