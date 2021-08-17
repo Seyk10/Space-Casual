@@ -48,7 +48,7 @@ public class OrbitalMovement : MonoBehaviour
     }
     void ApplyBaseSpeed()
     {
-        float Circumfrance = Mathf.PI * ((PlanetRadius + Altitude) * (PlanetRadius + Altitude));
+        float Circumfrance = 2* Mathf.PI * (PlanetRadius + Altitude);
         float OneDegree = Circumfrance / 360;
         float Rotation = (MinimumSpeed * OneDegree);
         PlayerOrigin.Rotate(new Vector3(Rotation, 0, 0) * (10 * Time.deltaTime));

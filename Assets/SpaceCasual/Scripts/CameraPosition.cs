@@ -19,14 +19,24 @@ public class CameraPosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float Y_Offset = Distance * ((180 - (Angle + 90)) / 90);
-        TargetPosition = (Spaceship.position - transform.position) + new Vector3(0, Y_Offset, -Distance);
-        TargetPosition += Spaceship.position;
+        Vector3 PointA;
+        Vector3 PointB;
+        Vector3 PointC;
 
-        Debug.DrawLine(transform.position, transform.position + (-transform.forward * Distance));
-        Debug.DrawLine(transform.position, transform.position + (transform.up * Y_Offset));
-        Debug.DrawLine(transform.position + (-transform.forward * Distance), transform.position + (transform.up * Y_Offset));
-        transform.rotation = Quaternion.Euler(Angle,0,0);
+        float Y_Offset = Distance * Mathf.Tan(Angle);
+
+        PointA = Spaceship.position;
+        PointB = Spaceship.position - (Spaceship.forward * Distance);
+        PointC = PointB + (Spaceship.up * Y_Offset);
+
+        TargetPosition = PointC;
+
+        Debug.DrawLine(PointA, PointB, Color.green);
+        Debug.DrawLine(PointB, PointC, Color.blue);
+        Debug.DrawLine(PointC, PointA, Color.red);
+
+        transform.rotation = Quaternion.LookRotation(Spaceship.position - transform.position, Spaceship.transform.up);
+
         if(Mathf.Abs((transform.position - TargetPosition).magnitude) > 0.1f)
         {
             transform.position = Vector3.Lerp(transform.position, TargetPosition, Delay * Time.deltaTime);
