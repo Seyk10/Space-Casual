@@ -16,6 +16,7 @@ public class OrbitalMovement : MonoBehaviour
     [SerializeField] private float MaximumAltitude;
 
     [Header("Speed Controls")]
+    [Tooltip("Speeds are representitive of surface speeds in meters per second")]
     [SerializeField] private float MinimumSpeed;
     [SerializeField] private float MaximumSpeed;
     [SerializeField] private float TurnSpeed;
@@ -42,8 +43,15 @@ public class OrbitalMovement : MonoBehaviour
         GetAltitude();
 
         ApplyInput();
-        PlayerOrigin.Rotate(new Vector3(MinimumSpeed, 0, 0) * TurnSpeed * (10 * Time.deltaTime));
 
+        ApplyBaseSpeed();
+    }
+    void ApplyBaseSpeed()
+    {
+        float Circumfrance = Mathf.PI * ((PlanetRadius + Altitude) * (PlanetRadius + Altitude));
+        float OneDegree = Circumfrance / 360;
+        float Rotation = (MinimumSpeed * OneDegree);
+        PlayerOrigin.Rotate(new Vector3(Rotation, 0, 0) * (10 * Time.deltaTime));
     }
     void CheckPlanetStatus()
     {
@@ -90,6 +98,7 @@ public class OrbitalMovement : MonoBehaviour
     }
     public void ChangeAltitude(float delta)
     {
+        delta *= -1;
         Vector3 AltitudeChange = new Vector3(0, delta, 0);
 
         if (Altitude < MinimumAltitude && delta > 0) delta = 0;

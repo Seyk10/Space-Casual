@@ -33,16 +33,24 @@ public class InputReader : MonoBehaviour
 
         return ProcessedMovement;
     }
-    public void OnMovement(InputAction.CallbackContext context)
+    public bool GetBoost()
     {
-        _Movement = context.ReadValue<Vector2>();
+        if (Boost)
+        {
+            Boost = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
-    public void OnMovement(Vector2 value)
+    public void OnMovement(InputValue value)
     {
-        _Movement = value;
+        _Movement = value.Get<Vector2>();
     }
-    public void OnBoost()
+    public void OnBoost(InputValue value)
     {
-        Boost = true;
+        Boost = value.isPressed;
     }
 }
