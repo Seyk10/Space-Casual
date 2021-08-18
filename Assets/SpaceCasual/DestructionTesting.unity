@@ -153,7 +153,7 @@ Transform:
   - {fileID: 1503471920}
   - {fileID: 1519551609}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &135814857 stripped
 Transform:
@@ -533,6 +533,7 @@ GameObject:
   - component: {fileID: 674630567}
   - component: {fileID: 674630572}
   - component: {fileID: 674630571}
+  - component: {fileID: 674630568}
   m_Layer: 0
   m_Name: '"Player"'
   m_TagString: Untagged
@@ -547,12 +548,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 674630565}
-  m_LocalRotation: {x: -0.70710653, y: -0, z: -0, w: 0.7071071}
-  m_LocalPosition: {x: 0, y: -0, z: -10.19}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1725618619}
-  - {fileID: 1271221755}
   m_Father: {fileID: 1030304732}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
@@ -568,13 +568,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b4d32df44336440ae437b80aef45ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Planet: {fileID: 1523853990}
+  MovementType: 1
+  Planet: {fileID: 0}
   Altitude: 0
-  MinimumAltitude: 4
-  MaximumAltitude: 12
-  MinimumSpeed: 1
+  MinimumAltitude: 0
+  MaximumAltitude: 0
+  MinimumSpeed: 2
   MaximumSpeed: 5
   TurnSpeed: 5
+  PlanetAssigned: 0
+  InOrbit: 0
+--- !u!65 &674630568
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674630565}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 2.862128}
+  m_Center: {x: 0, y: -3.0064198e-15, z: -0.21474028}
 --- !u!114 &674630571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1046,14 +1062,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1030304731}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 49.37}
+  m_LocalRotation: {x: -0.00000006740128, y: -0.7071071, z: 0.7071065, w: -0.000000052154057}
+  m_LocalPosition: {x: -0, y: -0, z: 282.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 674630566}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
 --- !u!1 &1043371342
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,7 +1319,7 @@ GameObject:
   - component: {fileID: 1271221758}
   - component: {fileID: 1271221757}
   m_Layer: 0
-  m_Name: CM vcam1
+  m_Name: Follow Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1316,13 +1332,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271221754}
-  m_LocalRotation: {x: 0.28978404, y: -0, z: -0, w: 0.95709205}
-  m_LocalPosition: {x: 0, y: 20.001362, z: -30.002724}
+  m_LocalRotation: {x: -0.47185767, y: -0, z: -0, w: 0.8816748}
+  m_LocalPosition: {x: 0, y: -30.002758, z: 19.178593}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2031260027}
-  m_Father: {fileID: 674630566}
-  m_RootOrder: 1
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -28.471, y: 0, z: 0}
 --- !u!114 &1271221756
 MonoBehaviour:
@@ -1372,9 +1388,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Angle: 35
-  Distance: 2
-  Delay: 10
-  Spaceship: {fileID: 0}
+  Distance: 25
+  Delay: 5
+  Spaceship: {fileID: 674630566}
 --- !u!114 &1271221758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1782,8 +1798,11 @@ GameObject:
   - component: {fileID: 1523853994}
   - component: {fileID: 1523853993}
   - component: {fileID: 1523853992}
-  - component: {fileID: 1523853991}
   - component: {fileID: 1523853990}
+  - component: {fileID: 1523853991}
+  - component: {fileID: 1523853995}
+  - component: {fileID: 1523853997}
+  - component: {fileID: 1523853996}
   m_Layer: 0
   m_Name: '"Planet"'
   m_TagString: Untagged
@@ -1803,7 +1822,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e6f2477beead4a4bb8e50836e95619e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 100
+  Radius: 0
+  MaxAltitude: 0
+  MinAltitude: 0
 --- !u!135 &1523853991
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1880,6 +1901,48 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+--- !u!135 &1523853995
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523853989}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5706599
+  m_Center: {x: -4.944363e-16, y: 0, z: 0.007977905}
+--- !u!54 &1523853996
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523853989}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!135 &1523853997
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523853989}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.8287196
+  m_Center: {x: 1.5524873e-15, y: 0, z: -0.028719634}
 --- !u!1 &1583721712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2296,7 +2359,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1879071411}
   m_LocalRotation: {x: -0.47185767, y: 0, z: 0, w: 0.8816748}
-  m_LocalPosition: {x: 0, y: -84.67787, z: 54.128613}
+  m_LocalPosition: {x: -0.0000038258663, y: -134.5326, z: 54.113754}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

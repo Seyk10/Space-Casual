@@ -1,99 +1,136 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OrbitalMovement : MonoBehaviour
 {
-    [SerializeField] private Planet Planet;
+    enum MovementScheme { Orbital, FreeFlight };
+    [SerializeField] MovementScheme MovementType;
+
+    [SerializeField] private Planet Planet;                      //Planets hold data about their size and position
     Vector3 PlanetPosition;
     float PlanetRadius;
 
     Transform PlayerOrigin;
 
     [Header("Altitude Controls")]
+    [Tooltip("Current distance between the player and the planet's surface")]
     [SerializeField] private float Altitude;
+    [Tooltip("How close to the planet's surface can the player go?")]
     [SerializeField] private float MinimumAltitude;
+    [Tooltip("How far from the planet's surface can the player go before leaving the planet?")]
     [SerializeField] private float MaximumAltitude;
 
     [Header("Speed Controls")]
-    [Tooltip("Speeds are representitive of surface speeds in meters per second")]
     [SerializeField] private float MinimumSpeed;
     [SerializeField] private float MaximumSpeed;
+    [Tooltip("How fast the player can turn (Left/Right)")]
     [SerializeField] private float TurnSpeed;
 
     InputReader _input;
 
-    bool PlanetAssigned;
-    bool OnPlanet;
+    public bool PlanetAssigned;
+    public bool InOrbit;
     // Start is called before the first frame update
     void Start()
     {
-        _input = GetComponent<InputReader>();
-        PlayerOrigin = transform.parent.GetComponent<Transform>();
-        PlanetRadius = Planet.GetRadius();
-        PlanetPosition = Planet.GetPosition();
-
-        transform.position = Vector3.zero + (-Vector3.forward * (PlanetRadius + MinimumAltitude));
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        CheckPlanetStatus();
-        GetAltitude();
-
-        ApplyInput();
-
-        ApplyBaseSpeed();
-    }
-    void ApplyBaseSpeed()
-    {
-        float Circumfrance = 2* Mathf.PI * (PlanetRadius + Altitude);
-        float OneDegree = Circumfrance / 360;
-        float Rotation = (MinimumSpeed * OneDegree);
-        PlayerOrigin.Rotate(new Vector3(Rotation, 0, 0) * (10 * Time.deltaTime));
-    }
-    void CheckPlanetStatus()
-    {
-        if (Planet == null) PlanetAssigned = false;
-
+        _input = GetComponent<InputReader>();                        //Access Input data, Processed by a InputReader class
+        PlayerOrigin = transform.parent.GetComponent<Transform>();  //Get a refrence to the player's pivot point
         if (Planet != null)
         {
-            PlanetAssigned = true;
-            PlanetRadius = Planet.GetRadius();
-            PlanetPosition = Planet.GetPosition();
-            if (PlayerOrigin.position != PlanetPosition)
-            {
-                PlayerOrigin.position = PlanetPosition;
-            }
+            MovementType = MovementScheme.Orbital;
+            PlanetRadius = Planet.GetRadius();                          //Store the current planet's radius
+            PlanetPosition = Planet.GetPosition();                      //Store the current planet's position
+            MinimumAltitude = Planet.GetMinAltitude();
+            MaximumAltitude = Planet.GetMaxAltitude();
+            transform.position = Vector3.zero + (-transform.forward * (PlanetRadius + MinimumAltitude));  //If on a planet, move the player to it's surface
         }
         else
         {
-            OnPlanet = true;
+            MovementType = MovementScheme.FreeFlight;
         }
-        
-        if (!OnPlanet && PlanetAssigned)
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        CheckPlanetStatus();      //Manages whether the player is flying around a planet or not
+
+        switch (MovementType)    //Trigger certian functions based on the current movement scenerio
         {
-            transform.position = Vector3.Lerp(transform.position, (PlanetPosition + (transform.up * (PlanetRadius + MaximumAltitude-.5f))), 10f * Time.deltaTime);
+            case MovementScheme.Orbital:
+                GetAltitude();            //Tracks Altitude
+                ApplyInput();             //Process player movement
+                ApplyBaseSpeed();         //Apply Base movement speed
+                break;
+            case MovementScheme.FreeFlight:
+                ApplyInput();             //Process player movement
+                ApplyBaseSpeed();         //Apply Base movement speed
+                break;
+        }
+    }
+    void ApplyBaseSpeed()
+    {
+        float Circumfrance = 2 * Mathf.PI * (PlanetRadius);
+        float OneDegree = Circumfrance / 360;
+        float Rotation = (MinimumSpeed * OneDegree);
+        if (MovementType == MovementScheme.Orbital)
+        {
+            PlayerOrigin.RotateAround(PlayerOrigin.position, transform.right, (Rotation * Time.deltaTime));
+        }
+        else
+        {
+            PlayerOrigin.transform.position += transform.forward * MinimumSpeed * (10 * Time.deltaTime);
+        }
+    }
+    void CheckPlanetStatus()
+    {
+        if (Planet == null)
+        {
+            PlanetAssigned = false;
+            InOrbit = false;
+            MovementType = MovementScheme.FreeFlight;
+            PlayerOrigin.position = transform.position;
+            transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            PlanetAssigned = true;
+        }
+        if (PlanetAssigned)
+        {
+            PlanetRadius = Planet.GetRadius();
+            PlanetPosition = Planet.GetPosition();
+            MinimumAltitude = Planet.GetMinAltitude() - PlanetRadius;
+            MaximumAltitude = Planet.GetMaxAltitude() - PlanetRadius;
+            MovementType = MovementScheme.Orbital;
+            if (InOrbit && Altitude >= MaximumAltitude)        // If the player is higher than the maximum altitude, Transition to Free Flight
+            {
+                InOrbit = false;
+                Planet = null;
+                MovementType = MovementScheme.FreeFlight;
+            }
+            if (InOrbit)
+            {
+                Physics.Raycast(transform.position, (PlanetPosition - transform.position).normalized, out RaycastHit EnterOrbit);
+                if (EnterOrbit.collider.isTrigger)
+                {
+                    transform.position = Vector3.Lerp(transform.position, Vector3.MoveTowards(transform.position, PlayerOrigin.transform.up * MinimumAltitude, 50 * Time.deltaTime), 50 * Time.deltaTime);
+                }
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up, EnterOrbit.normal) * transform.rotation, Time.deltaTime);
+            }
+            if (!InOrbit)
+            {
+                if (Mathf.Abs(Vector3.Distance(transform.position, PlayerOrigin.position)) < PlanetRadius + MaximumAltitude || Altitude < 1)
+                {
+                    InOrbit = true;
+                }
+            }
         }
     }
     public float GetAltitude()
     {
-        if (PlanetAssigned == false) return -1f;
-
         Physics.Raycast(transform.position, (PlanetPosition - transform.position).normalized, out RaycastHit AltitudeCheck);
-        Altitude = AltitudeCheck.distance;
+        Altitude = Mathf.Abs(Vector3.Distance(transform.position, PlanetPosition) - PlanetRadius);
         Debug.DrawRay(transform.position, (PlanetPosition - transform.position), Color.green);
-
-        if (Altitude >= MaximumAltitude)
-        {
-            OnPlanet = false;
-        }
-        else
-        {
-            OnPlanet = true;
-        }
-
+        transform.rotation = Quaternion.FromToRotation(transform.up, AltitudeCheck.normal) * transform.rotation;
         return AltitudeCheck.distance;
     }
     public void ChangeAltitude(float delta)
@@ -104,20 +141,55 @@ public class OrbitalMovement : MonoBehaviour
         if (Altitude < MinimumAltitude && delta > 0) delta = 0;
         else if (Altitude > MaximumAltitude && delta < 0) delta = 0;
 
-        if(OnPlanet) transform.position = Vector3.Lerp(transform.position, Vector3.MoveTowards(transform.position, PlayerOrigin.position, delta), 10f * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, Vector3.MoveTowards(transform.position, PlayerOrigin.position, delta), 10f * Time.deltaTime);
     }
     public void PlayerTurn(float delta)
     {
-        PlayerOrigin.Rotate(new Vector3(0, 0, -delta) * TurnSpeed * (10 * Time.deltaTime));
+        transform.Rotate(new Vector3(0, delta, 0) * TurnSpeed * (10 * Time.deltaTime));
+    }
+    void ChangePitch(float delta)
+    {
+        delta *= -1;
+        if (Mathf.Abs(delta) > 0)
+        {
+            PlayerOrigin.transform.Rotate(delta, 0, 0);
+            PlayerOrigin.Rotate(transform.right.normalized * delta, 0, 0);
+        }
     }
     public void ApplyInput()
     {
-        if(_input.GetMovement() != Vector2.zero)
+        if (_input.GetMovement() != Vector2.zero)
         {
-            ChangeAltitude(-_input.GetMovement().y);
-
-            PlayerTurn(_input.GetMovement().x);
+            switch (MovementType)
+            {
+                case MovementScheme.Orbital:
+                    ChangeAltitude(-_input.GetMovement().y);
+                    PlayerTurn(_input.GetMovement().x);
+                    break;
+                case MovementScheme.FreeFlight:
+                    ChangePitch(-_input.GetMovement().y);
+                    PlayerTurn(_input.GetMovement().x);
+                    break;
+            }
         }
-
+    }
+    void OnTriggerEnter(Collider collision)
+    {
+        Debug.Log("Entered a planet's orbit");
+        if (collision.GetComponent<Planet>())
+        {
+            Planet = collision.GetComponent<Planet>();
+            Vector3 Temporary = PlayerOrigin.position;
+            PlayerOrigin.position = Planet.GetPosition();
+            transform.position = Temporary;
+        }
+    }
+    void OnTriggerExit(Collider collision)
+    {
+        Debug.Log("Exited a planet's origin");
+        if (collision.GetComponent<Planet>())
+        {
+            Planet = null;
+        }
     }
 }
