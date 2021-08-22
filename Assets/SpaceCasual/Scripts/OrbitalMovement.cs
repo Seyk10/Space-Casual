@@ -51,8 +51,6 @@ public class OrbitalMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckPlanetStatus();      //Manages whether the player is flying around a planet or not
-
         switch (MovementType)    //Trigger certian functions based on the current movement scenerio
         {
             case MovementScheme.Orbital:
@@ -80,57 +78,21 @@ public class OrbitalMovement : MonoBehaviour
             PlayerOrigin.transform.position += transform.forward * MinimumSpeed * (10 * Time.deltaTime);
         }
     }
-    void CheckPlanetStatus()
-    {
-        if (Planet == null)
-        {
-            PlanetAssigned = false;
-            InOrbit = false;
-            MovementType = MovementScheme.FreeFlight;
-            PlayerOrigin.position = transform.position;
-            transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            PlanetAssigned = true;
-        }
-        if (PlanetAssigned)
-        {
-            PlanetRadius = Planet.GetRadius();
-            PlanetPosition = Planet.GetPosition();
-            MinimumAltitude = Planet.GetMinAltitude() - PlanetRadius;
-            MaximumAltitude = Planet.GetMaxAltitude() - PlanetRadius;
-            MovementType = MovementScheme.Orbital;
-            if (InOrbit && Altitude >= MaximumAltitude)        // If the player is higher than the maximum altitude, Transition to Free Flight
-            {
-                InOrbit = false;
-                Planet = null;
-                MovementType = MovementScheme.FreeFlight;
-            }
-            if (InOrbit)
-            {
-                Physics.Raycast(transform.position, (PlanetPosition - transform.position).normalized, out RaycastHit EnterOrbit);
-                if (EnterOrbit.collider.isTrigger)
-                {
-                    transform.position = Vector3.Lerp(transform.position, Vector3.MoveTowards(transform.position, PlayerOrigin.transform.up * MinimumAltitude, 50 * Time.deltaTime), 50 * Time.deltaTime);
-                }
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up, EnterOrbit.normal) * transform.rotation, Time.deltaTime);
-            }
-            if (!InOrbit)
-            {
-                if (Mathf.Abs(Vector3.Distance(transform.position, PlayerOrigin.position)) < PlanetRadius + MaximumAltitude || Altitude < 1)
-                {
-                    InOrbit = true;
-                }
-            }
-        }
-    }
     public float GetAltitude()
     {
         Physics.Raycast(transform.position, (PlanetPosition - transform.position).normalized, out RaycastHit AltitudeCheck);
-        Altitude = Mathf.Abs(Vector3.Distance(transform.position, PlanetPosition) - PlanetRadius);
+        if (InOrbit)
+        {
+            Altitude = AltitudeCheck.distance;
+        }
+        else
+        {
+            Altitude = Mathf.Abs(Vector3.Distance(transform.position, PlanetPosition) - PlanetRadius);
+        }
         Debug.DrawRay(transform.position, (PlanetPosition - transform.position), Color.green);
-        transform.rotation = Quaternion.FromToRotation(transform.up, AltitudeCheck.normal) * transform.rotation;
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.FromToRotation(transform.up, AltitudeCheck.normal) * transform.rotation, Time.deltaTime);
+
         return AltitudeCheck.distance;
     }
     public void ChangeAltitude(float delta)
@@ -139,7 +101,6 @@ public class OrbitalMovement : MonoBehaviour
         Vector3 AltitudeChange = new Vector3(0, delta, 0);
 
         if (Altitude < MinimumAltitude && delta > 0) delta = 0;
-        else if (Altitude > MaximumAltitude && delta < 0) delta = 0;
 
         transform.position = Vector3.Lerp(transform.position, Vector3.MoveTowards(transform.position, PlayerOrigin.position, delta), 10f * Time.deltaTime);
     }
@@ -182,6 +143,12 @@ public class OrbitalMovement : MonoBehaviour
             Vector3 Temporary = PlayerOrigin.position;
             PlayerOrigin.position = Planet.GetPosition();
             transform.position = Temporary;
+
+            PlanetRadius = Planet.GetRadius();
+            PlanetPosition = Planet.GetPosition();
+            MinimumAltitude = Planet.GetMinAltitude() - PlanetRadius;
+            MaximumAltitude = Planet.GetMaxAltitude() - PlanetRadius;
+            MovementType = MovementScheme.Orbital;
         }
     }
     void OnTriggerExit(Collider collision)
@@ -190,6 +157,10 @@ public class OrbitalMovement : MonoBehaviour
         if (collision.GetComponent<Planet>())
         {
             Planet = null;
+
+            MovementType = MovementScheme.FreeFlight;
+            PlayerOrigin.position = transform.position;
+            transform.localPosition = Vector3.zero;
         }
     }
 }

@@ -9,14 +9,15 @@ public class CameraPosition : MonoBehaviour
     [Header("How far behind the player the camera will follow")]
     [SerializeField] float Distance;
     [Header("Delay between Player and Camera movement")]
-    [SerializeField] float Delay;
+    [Range(1, 10)]
+    [SerializeField] float FollowSpeed;
     [Space(20)]
     [Header("Assign Follow Target Here")]
     [SerializeField] Transform Spaceship;
     
     Vector3 TargetPosition;
 
-    void FixedUpdate()
+    void Update()
     {
         Vector3 PointA;
         Vector3 PointB;
@@ -35,10 +36,10 @@ public class CameraPosition : MonoBehaviour
         Debug.DrawLine(PointC, PointA, Color.red);                     //For Drawing lines in the Editor
         
         //Keeps the camera centered on the player, movement is on a delay
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Spaceship.position - transform.position, Spaceship.transform.up), Delay * Time.deltaTime); 
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(Spaceship.position - transform.position, Spaceship.transform.up), FollowSpeed * Time.deltaTime); 
 
         //Smoothly move the camera to it's target position, movement is on a delay
         Vector3 Refrence = Vector3.zero;
-        transform.position = Vector3.SmoothDamp(transform.position, TargetPosition, ref Refrence, Delay * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, TargetPosition, FollowSpeed * Time.deltaTime);
     }
 }
