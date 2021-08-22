@@ -136,7 +136,6 @@ public class OrbitalMovement : MonoBehaviour
     }
     void OnTriggerEnter(Collider collision)
     {
-        Debug.Log("Entered a planet's orbit");
         if (collision.GetComponent<Planet>())
         {
             Planet = collision.GetComponent<Planet>();
@@ -153,7 +152,6 @@ public class OrbitalMovement : MonoBehaviour
     }
     void OnTriggerExit(Collider collision)
     {
-        Debug.Log("Exited a planet's origin");
         if (collision.GetComponent<Planet>())
         {
             Planet = null;
