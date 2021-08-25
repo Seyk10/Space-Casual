@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DestructionBehavior : MonoBehaviour
 {
-    public DestructionProfile profile;  //Destruction Profile will be a scriptableObject, holding damage models, particles, and data.
+    public GameObject profile;  //Destruction Profile will be a scriptableObject, holding damage models, particles, and data.
     float FuelAdd;
     float ScoreAdd;
     bool Destroyed;
