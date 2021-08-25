@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DestructionBehavior : MonoBehaviour
 {
-    public GameObject profile;  //Destruction Profile will be a scriptableObject, holding damage models, particles, and data.
+    public DestructionProfile profile;  //Destruction Profile will be a scriptableObject, holding damage models, particles, and data.
     float FuelAdd;
     float ScoreAdd;
     bool Destroyed;
@@ -12,10 +13,12 @@ public class DestructionBehavior : MonoBehaviour
     ParticleSystem ContactEffect;
     ParticleSystem RubbleEffect;
 
+    [SerializeField] private UnityEvent OnBreakDown;
+
     void Start()
     {
-        FuelAdd = profile.Fuel;
-        ScoreAdd = profile.Score;
+        FuelAdd = profile.FuelValue;
+        ScoreAdd = profile.ScoreValue;
     }
     public void ApplyContact(Vector3 contactPoint)
     {
@@ -24,8 +27,9 @@ public class DestructionBehavior : MonoBehaviour
     }
     public void Crumble()
     {
-        Instantiate(profile.Destroyed, transform.position);
-        Instantiate(RubbleEffect, transform.position, Quaternion.identity);
+        Instantiate(profile.DestructionModel, transform.position, transform.rotation);
+        Instantiate(RubbleEffect, transform.position, transform.rotation);
+        OnBreakDown.Invoke();
     }
 }
 
