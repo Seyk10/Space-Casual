@@ -1,0 +1,28 @@
+using UnityEngine;
+
+public class DestructionBehavior : Monobehavior
+{
+  public DestructionProfile profile;  //Destruction Profile will be a scriptableObject, holding damage models, particles, and data.
+  float FuelAdd;
+  float ScoreAdd;
+  bool Destroyed;
+  
+  ParticleSystem ContactEffect;
+  ParticleSystem RubbleEffect;
+  
+  Start()
+  {
+    FuelAdd = profile.Fuel;
+    ScoreAdd = profile.Score;
+  }
+  public void ApplyContact(Vector3 contactPoint)
+  {
+    ParticleSystem contact = Instantiate(ContactEffect, contactPoint);
+    contact.Play();
+  }
+  public void Crumble()
+  {
+    Instatiate(profile.Destroyed, transform.position);
+    Instantiate(RubbleEffect, transform.position);
+  }
+}
