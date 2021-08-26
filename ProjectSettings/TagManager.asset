@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Destructable
   - Fuel Scaler
+  - Fuel System
   layers:
   - Default
   - TransparentFX

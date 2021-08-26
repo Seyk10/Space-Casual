@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 1827927060419522252}
   m_Layer: 0
   m_Name: Fuel System
-  m_TagString: Untagged
+  m_TagString: Fuel System
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6412108c3101e3b41924ac382435f18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialValue: 5
+  InitialValue: 10
   MaximumValue: 10
   OnReachingZero:
     m_PersistentCalls:

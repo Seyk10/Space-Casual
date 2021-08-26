@@ -1,14 +1,15 @@
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class OrbitalMovement : MonoBehaviour
 {
     enum MovementScheme { Orbital, FreeFlight };
     [SerializeField] MovementScheme MovementType;
 
-    [SerializeField] private Planet Planet;                      //Planets hold data about their size and position
+    private Planet Planet;                      //Planets hold data about their size and position
     Vector3 PlanetPosition;
     float PlanetRadius;
-
     Transform PlayerOrigin;
 
     [Header("Altitude Controls")]
@@ -20,18 +21,31 @@ public class OrbitalMovement : MonoBehaviour
     [SerializeField] private float MaximumAltitude;
 
     [Header("Speed Controls")]
-    [SerializeField] private float MinimumSpeed;
-    [SerializeField] private float MaximumSpeed;
+    [SerializeField] public float MinimumSpeed;
+    [SerializeField] public float CurrentSpeed;
+    [SerializeField] public float MaximumSpeed;
     [Tooltip("How fast the player can turn (Left/Right)")]
     [SerializeField] private float TurnSpeed;
 
+    [Header("Boost Settings")]
+    public float TimeToDecelerate;
+    bool CollisionEnabled;
+    [SerializeField] public UnityEvent OnAccelerate;
+    [SerializeField] public UnityEvent OnDecelerate;
+    Collider PlayerCollision;
+
     InputReader _input;
 
-    public bool PlanetAssigned;
-    public bool InOrbit;
+    bool PlanetAssigned;
+    bool InOrbit;
     // Start is called before the first frame update
     void Start()
     {
+        PlayerCollision = GetComponent<Collider>();
+        PlayerCollision.isTrigger = false;
+
+        CurrentSpeed = MinimumSpeed;
+
         _input = GetComponent<InputReader>();                        //Access Input data, Processed by a InputReader class
         PlayerOrigin = transform.parent.GetComponent<Transform>();  //Get a refrence to the player's pivot point
         if (Planet != null)
@@ -68,14 +82,14 @@ public class OrbitalMovement : MonoBehaviour
     {
         float Circumfrance = 2 * Mathf.PI * (PlanetRadius);
         float OneDegree = Circumfrance / 360;
-        float Rotation = (MinimumSpeed * OneDegree);
+        float Rotation = (CurrentSpeed * OneDegree);
         if (MovementType == MovementScheme.Orbital)
         {
             PlayerOrigin.RotateAround(PlayerOrigin.position, transform.right, (Rotation * Time.deltaTime));
         }
         else
         {
-            PlayerOrigin.transform.position += transform.forward * MinimumSpeed * (10 * Time.deltaTime);
+            PlayerOrigin.transform.position += transform.forward * CurrentSpeed * (10 * Time.deltaTime);
         }
     }
     public float GetAltitude()
@@ -113,8 +127,7 @@ public class OrbitalMovement : MonoBehaviour
         delta *= -1;
         if (Mathf.Abs(delta) > 0)
         {
-            PlayerOrigin.transform.Rotate(delta, 0, 0);
-            PlayerOrigin.Rotate(transform.right.normalized * delta, 0, 0);
+            transform.Rotate(delta, 0, 0);
         }
     }
     public void ApplyInput()
@@ -136,6 +149,10 @@ public class OrbitalMovement : MonoBehaviour
     }
     void OnTriggerEnter(Collider collision)
     {
+        if (GetComponent<BoostBehavior>().Boosting)
+        {
+            GetComponent<BoostBehavior>().BoostedCollision();
+        }
         if (collision.GetComponent<Planet>())
         {
             Planet = collision.GetComponent<Planet>();
@@ -160,5 +177,18 @@ public class OrbitalMovement : MonoBehaviour
             PlayerOrigin.position = transform.position;
             transform.localPosition = Vector3.zero;
         }
+    }
+
+    public void EnableCollision(bool value)
+    {
+        if (value)
+        {
+            PlayerCollision.isTrigger = false;
+        }
+        else
+        {
+            PlayerCollision.isTrigger = true;
+        }
+        CollisionEnabled = value;
     }
 }

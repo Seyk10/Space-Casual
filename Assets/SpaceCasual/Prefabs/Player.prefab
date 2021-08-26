@@ -1,32 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!65 &3920233817883691819
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4226098503660677565}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 4.083213, y: 0.42015213, z: 1}
-  m_Center: {x: -0.059551477, y: 0.00085672736, z: 0}
---- !u!136 &3920233817883691816
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4226098503660677565}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5556395
-  m_Height: 3.3542178
-  m_Direction: 2
-  m_Center: {x: 0, y: 0.13589393, z: 0.12401521}
 --- !u!1 &3920233819275314931
 GameObject:
   m_ObjectHideFlags: 0
@@ -37,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3920233819275314928}
   - component: {fileID: 3920233819275314929}
+  - component: {fileID: 717191316901473643}
   - component: {fileID: 3920233819275314938}
   - component: {fileID: 3920233819275314941}
   - component: {fileID: 3920233819275314942}
@@ -80,10 +54,39 @@ MonoBehaviour:
   MinimumAltitude: 0
   MaximumAltitude: 0
   MinimumSpeed: 2
-  MaximumSpeed: 5
+  CurrentSpeed: 0
+  MaximumSpeed: 20
   TurnSpeed: 5
-  PlanetAssigned: 0
-  InOrbit: 0
+  TimeToDecelerate: 2
+  CollisionEnabled: 0
+  OnAccelerate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDecelerate:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &717191316901473643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3920233819275314931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 018301d13880e3e418e281112aa50d4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpeedIncrease: 5
+  FuelCost: 1
+  OnTriggerBoost:
+    m_PersistentCalls:
+      m_Calls: []
+  FuelLevel: 0
+  Boosting: 0
+  BoostCollision:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3920233819275314938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,11 +201,11 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3920233819275314931}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 2.862128}
-  m_Center: {x: 0, y: -3.0064198e-15, z: -0.21474028}
+  m_Size: {x: 7.867197, y: 2.5163653, z: 5.9874816}
+  m_Center: {x: 0.06592992, y: 0.18634887, z: 0.37864414}
 --- !u!1 &3920233819625488013
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3920233819625488010}
   m_Layer: 0
-  m_Name: Player Origin
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -226,7 +229,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3920233819625488013}
-  m_LocalRotation: {x: -0.00000006740128, y: -0.7071071, z: 0.7071065, w: -0.000000052154057}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0.7071068, w: 0}
   m_LocalPosition: {x: -0, y: -0, z: 282.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -303,11 +306,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 216ae6613f948f1429ea48289223e487, type: 3}
---- !u!1 &4226098503660677565 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 216ae6613f948f1429ea48289223e487, type: 3}
-  m_PrefabInstance: {fileID: 3920233818103747820}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3597758856852239111 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 216ae6613f948f1429ea48289223e487, type: 3}
